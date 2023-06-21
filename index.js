@@ -4,7 +4,7 @@ import { clamp, remap, smoothstep } from "./modules/MathHelpers"
 function main() {
     let fieldSpeed = 0.001
     let diffusivity = 1e-7
-    let viscosity = 1e-6
+    let viscosity = 0// 1e-6
     let noiseRate = 0.05
 
     let size = 126
@@ -29,10 +29,10 @@ function main() {
 
         // Add jet
         let sourceX = 0
-        let sourceY = .45
+        let sourceY = 0
         let sourceDensityRate = 0.2
-        let sourceAcceleration = 0.0001 * ( Math.sin( time / 1000 / 10 ) * .5 + .5 )
-        let jetAngle = Math.sin( -time / 1000 * 2 ) - Math.PI / 2
+        let sourceAcceleration = 0.0001 * ( Math.sin( time / 1000 / 2 ) * .5 + .5 )
+        let jetAngle = Math.sin( -time / 1000 / 20 ) * Math.PI * 4
         let c = Math.cos( jetAngle )
         let s = Math.sin( jetAngle )
         // engine.addSourceFromFunction( engine.densityPrev, 1, ( x, y ) =>
@@ -49,9 +49,7 @@ function main() {
         // Decay
         for ( let i = 0; i < engine.densityPrev.length; i++ ) {
             engine.densityPrev[ i ] *= .99
-            engine.densityPrev[ i ] -= noiseRate / 2
-            if ( engine.densityPrev[ i ] < 0 )
-                engine.densityPrev[ i ] = 0
+            engine.densityPrev[ i ] = Math.max( 0, engine.densityPrev[ i ] - noiseRate / 2 )
             engine.vxPrev[ i ] *= .99
             engine.vyPrev[ i ] *= .99
         }
