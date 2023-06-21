@@ -4,7 +4,7 @@ import { clamp, remap, smoothstep } from "./modules/MathHelpers"
 function main() {
     let fieldSpeed = 0.001
     let diffusivity = 1e-7
-    let viscosity = 0// 1e-6
+    let viscosity = 1e-6
     let noiseRate = 0.05
 
     let size = 126
@@ -42,16 +42,13 @@ function main() {
         engine.addSourceFromFunction( engine.vyPrev, 1, ( x, y ) =>
             smoothstep( .25, .125, Math.hypot( x - sourceX, y - sourceY ) ) * s * sourceAcceleration )
 
-        engine.addSourceFromFunction( engine.densityPrev, 1, ( x, y ) =>
-            Math.random() * noiseRate )
-        // if ( stepCount++ % 10 == 0 )
-
-        // Decay
         for ( let i = 0; i < engine.densityPrev.length; i++ ) {
+            // Decay
             engine.densityPrev[ i ] *= .99
-            engine.densityPrev[ i ] = Math.max( 0, engine.densityPrev[ i ] - noiseRate / 2 )
             engine.vxPrev[ i ] *= .99
             engine.vyPrev[ i ] *= .99
+
+            engine.densityPrev[ i ] = Math.max( 0, engine.densityPrev[ i ] + ( Math.random() - .5 ) * noiseRate )
         }
 
         engine.densityStep( dt, diffusivity )
@@ -61,6 +58,7 @@ function main() {
         // for ( let d of engine.density ) netDensity += d
         // console.log( netDensity )
 
+        // if ( stepCount++ % 100 == 0 )
         drawScalar( engine, engine.density, 0, 1, mainCanvas )
         // drawVelocity( engine, engine.vx, engine.vy, mainCanvas )
 
