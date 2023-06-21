@@ -1,0 +1,11 @@
+{
+  "name": "fluid-sim",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "KJK <kody.j.king@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "vite": "^4.3.9",
+    "watch": "vite --port 1234"
+  }
+}
