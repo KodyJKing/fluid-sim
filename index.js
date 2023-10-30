@@ -6,6 +6,8 @@ function main() {
     let diffusivity = 1e-7
     let viscosity = 1e-6
     let noiseRate = 0.05
+    let sparseNoiseRate = 0.0005
+    let sparseNoiseAmplitude = 3
 
     let size = 126
     let engine = new FluidEngine( size )
@@ -30,9 +32,9 @@ function main() {
         // Add jet
         let sourceX = 0
         let sourceY = 0
-        let sourceDensityRate = 0.2
-        let sourceAcceleration = 0.0001 * ( Math.sin( time / 1000 / 2 ) * .5 + .5 )
-        let jetAngle = Math.sin( -time / 1000 / 20 ) * Math.PI * 4
+        let sourceDensityRate = 0.5
+        let sourceAcceleration = 0.0001 * ( Math.sin( time / 1000 / 2 ) * .5 + .5 ) //* Math.sin( time / 100 + 983274 )
+        let jetAngle = Math.PI / 4 // Math.sin( -time / 1000 / 20 ) * Math.PI * 4
         let c = Math.cos( jetAngle )
         let s = Math.sin( jetAngle )
         // engine.addSourceFromFunction( engine.densityPrev, 1, ( x, y ) =>
@@ -48,7 +50,9 @@ function main() {
             engine.vxPrev[ i ] *= .99
             engine.vyPrev[ i ] *= .99
 
-            engine.densityPrev[ i ] = Math.max( 0, engine.densityPrev[ i ] + ( Math.random() - .5 ) * noiseRate )
+            let sparseNoise = ( Math.random() < sparseNoiseRate ? sparseNoiseAmplitude : 0 ) - sparseNoiseAmplitude * sparseNoiseRate / 2
+            let noise = ( Math.random() - .5 ) * noiseRate
+            engine.densityPrev[ i ] = Math.max( 0, engine.densityPrev[ i ] + noise + sparseNoise )
         }
 
         engine.densityStep( dt, diffusivity )
@@ -82,10 +86,10 @@ function drawScalar( engine, x, min, max, canvas ) {
     for ( let j = 0; j < engine.sizePad; j++ ) {
         for ( let i = 0; i < engine.sizePad; i++ ) {
             let xVal = x[ engine.index( i, j ) ]
-            // let color = remap( xVal, min, max, 0, 255 )
-            // ctx.fillStyle = `rgb(${ color },${ color },${ color })`
-            let hue = remap( xVal, min, max, 0, 360 )
-            ctx.fillStyle = `hsl(${ hue },100%, 37.5%)`
+            let color = remap( xVal, min, max, 0, 255 )
+            ctx.fillStyle = `rgb(${ color },${ color },${ color })`
+            // let hue = remap( xVal, min, max, 0, 360 )
+            // ctx.fillStyle = `hsl(${ hue + 200 },100%, 37.5%)`
             ctx.fillRect( i * patchWidth, j * patchWidth, patchWidth, patchWidth )
         }
     }

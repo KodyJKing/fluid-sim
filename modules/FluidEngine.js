@@ -196,28 +196,29 @@ export default class FluidEngine {
         let N = this.size
 
         // Closed on all sides:
+        // for ( let i = 1; i <= this.size; i++ ) {
+        //     setX( 0, i, bound == 1 ? -getX( 1, i ) : getX( 1, i ) )
+        //     setX( N + 1, i, bound == 1 ? -getX( N, i ) : getX( N, i ) )
+        //     setX( i, 0, bound == 2 ? -getX( i, 1 ) : getX( i, 1 ) )
+        //     setX( i, N + 1, bound == 2 ? -getX( i, N ) : getX( i, N ) )
+        // }
+
+        // Wrap around:
         for ( let i = 1; i <= this.size; i++ ) {
-            setX( 0, i, bound == 1 ? -getX( 1, i ) : getX( 1, i ) )
-            setX( N + 1, i, bound == 1 ? -getX( N, i ) : getX( N, i ) )
-            setX( i, 0, bound == 2 ? -getX( i, 1 ) : getX( i, 1 ) )
-            setX( i, N + 1, bound == 2 ? -getX( i, N ) : getX( i, N ) )
+            let average = ( getX( 1, i ) + getX( N, i ) ) / 2
+            setX( 0, i, average )
+            setX( N + 1, i, average )
+
+            average = ( getX( i, 1 ) + getX( i, N ) ) / 2
+            setX( i, 0, average )
+            setX( i, N, average )
         }
+
+        // Set corners to average of their neighbors.
         setX( 0, 0, .5 * ( getX( 1, 0 ) + getX( 0, 1 ) ) )
         setX( 0, N + 1, .5 * ( getX( 1, N + 1 ) + getX( 0, N ) ) )
         setX( N + 1, 0, .5 * ( getX( N, 0 ) + getX( N + 1, 1 ) ) )
         setX( N + 1, N + 1, .5 * ( getX( N, N + 1 ) + getX( N + 1, N ) ) )
-
-        // Open ceiling:
-        // for ( let i = 1; i <= this.size; i++ ) {
-        //     setX( 0, i, bound == 1 ? -getX( 1, i ) : getX( 1, i ) )
-        //     setX( N + 1, i, bound == 1 ? -getX( N, i ) : getX( N, i ) )
-        //     setX( i, 0, 0 )
-        //     setX( i, N + 1, bound == 2 ? -getX( i, N ) : getX( i, N ) )
-        // }
-        // setX( 0, 0, 0 )
-        // setX( 0, N + 1, .5 * ( getX( 1, N + 1 ) + getX( 0, N ) ) )
-        // setX( N + 1, 0, 0 )
-        // setX( N + 1, N + 1, .5 * ( getX( N, N + 1 ) + getX( N + 1, N ) ) )
 
     }
 }
